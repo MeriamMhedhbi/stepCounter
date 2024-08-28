@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Android; // For Android permission handling
 
 public class StepCounter : MonoBehaviour
 {
@@ -51,20 +52,31 @@ public class StepCounter : MonoBehaviour
 
         StepDataHandler.Instance.CheckForNewDay();
 
+        // Request location permission if not already granted (for Android)
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+            {
+                Permission.RequestUserPermission(Permission.FineLocation);
+            }
+        }
+
         StartCoroutine(InitializeGPS());
         StartCoroutine(UpdateRoutine());
     }
 
     private IEnumerator InitializeGPS()
     {
+        // Check if GPS is enabled
         if (!Input.location.isEnabledByUser)
         {
             Debug.LogError("GPS not enabled by user!");
             yield break;
         }
 
+        // Start GPS service
         Input.location.Start();
-        
+
         int maxWait = 20;
         while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
         {
@@ -130,10 +142,11 @@ public class StepCounter : MonoBehaviour
             Vector2 currentGPSPosition = new Vector2(Input.location.lastData.latitude, Input.location.lastData.longitude);
             gpsDistance = Vector2.Distance(prevGPSPosition, currentGPSPosition) * 1000f; // Distance in meters
             prevGPSPosition = currentGPSPosition;
+            distanceWalked += gpsDistance;
         }
 
         // Combine both methods for a more accurate distance measurement
-        distanceWalked = distanceFromSteps + gpsDistance;
+        distanceWalked += distanceFromSteps;
     }
 
     private void CalculateCalories()
@@ -172,4 +185,3 @@ public class StepCounter : MonoBehaviour
         CalculateCalories();
     }
 }
-
