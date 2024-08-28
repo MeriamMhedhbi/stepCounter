@@ -5,15 +5,41 @@ using System.IO;
 
 public class DatabaseManager : MonoBehaviour
 {
+
+    private static DatabaseManager _instance;
+    public static DatabaseManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<DatabaseManager>();
+                if (_instance == null)
+                {
+                    GameObject container = new GameObject("DatabaseManager");
+                    _instance = container.AddComponent<DatabaseManager>();
+                }
+            }
+            return _instance;
+        }
+    }
+
     private string dbPath;
 
-    private void Start()
+    public void Start()
     {
         Debug.Log("Start method called.");
         dbPath = GetDatabasePath("StepCounterDB.sqlite");
         Debug.Log("Database path: " + dbPath);
         CreateDatabase();
         CreateTables();
+
+        // Test inserting data
+        InsertUserData("2024-08-28", 1000, 1.5f, 50f);
+
+        // Test retrieving data
+        GetUserStepsForDate("2024-08-28");
+
     }
 
     private string GetDatabasePath(string dbName)
@@ -42,34 +68,34 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
-private void CreateTables()
-{
-    // Update connection string to URI format
-    string connectionString = "URI=file:" + dbPath;
-    Debug.Log("Connection string: " + connectionString); // Print the connection string
-
-    using (var connection = new SqliteConnection(connectionString))
+    private void CreateTables()
     {
-        connection.Open();
-        using (var command = connection.CreateCommand())
+        // Update connection string to URI format
+        string connectionString = "URI=file:" + dbPath;
+        Debug.Log("Connection string: " + connectionString); // Print the connection string
+
+        using (var connection = new SqliteConnection(connectionString))
         {
-            command.CommandText = @"CREATE TABLE IF NOT EXISTS UserSteps (
+            connection.Open();
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = @"CREATE TABLE IF NOT EXISTS UserSteps (
                                     ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                     Date TEXT NOT NULL,
                                     Steps INTEGER NOT NULL,
                                     Distance REAL NOT NULL,
                                     Calories REAL NOT NULL
                                     );";
-            command.ExecuteNonQuery();
-            Debug.Log("Table created or verified.");
+                command.ExecuteNonQuery();
+                Debug.Log("Table created or verified.");
+            }
         }
     }
-}
 
 
     public void InsertUserData(string date, int steps, float distance, float calories)
     {
-        string connectionString = "Data Source=" + dbPath;
+        string connectionString = "URI=file:" + dbPath;
         Debug.Log("Connection string for insert: " + connectionString); // Print the connection string
 
         using (var connection = new SqliteConnection(connectionString))
@@ -108,7 +134,7 @@ private void CreateTables()
 
     public void GetUserStepsForDate(string date)
     {
-        string connectionString = "Data Source=" + dbPath;
+        string connectionString = "URI=file:" + dbPath;
         Debug.Log("Connection string for query: " + connectionString); // Print the connection string
 
         using (var connection = new SqliteConnection(connectionString))
