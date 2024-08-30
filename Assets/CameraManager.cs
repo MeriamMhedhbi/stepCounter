@@ -84,10 +84,15 @@ public class CameraManager : MonoBehaviour
         // Encode the texture to PNG
         byte[] photoBytes = photo.EncodeToPNG();
 
+        // Generate a unique filename based on the current timestamp
+        string timestamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string uniqueFilename = $"capturedImage_{timestamp}.png";
+
         // Save the image to the file system
-        string path = Path.Combine(Application.persistentDataPath, savePath);
+        string path = Path.Combine(Application.persistentDataPath, uniqueFilename);
         File.WriteAllBytes(path, photoBytes);
 
         Debug.Log($"Photo saved to {path}");
     }
+
 }
