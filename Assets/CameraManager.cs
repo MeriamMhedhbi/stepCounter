@@ -58,6 +58,11 @@ public class CameraManager : MonoBehaviour
         {
             webCamTexture.Play();  // Start the camera feed
         }
+
+        // Adjust the size of the RawImage to make it larger
+        cameraPreview.rectTransform.sizeDelta = new Vector2(Screen.width * 1.5f, Screen.height * 1.5f);
+
+        AdjustCameraPreviewOrientation();
     }
 
     void OnDisable()
@@ -95,4 +100,24 @@ public class CameraManager : MonoBehaviour
         Debug.Log($"Photo saved to {path}");
     }
 
+    private void AdjustCameraPreviewOrientation()
+    {
+        if (webCamTexture == null)
+        {
+            return;
+        }
+
+        // Adjust the rotation based on WebCamTexture's videoRotationAngle
+        cameraPreview.rectTransform.localEulerAngles = new Vector3(0, 0, -webCamTexture.videoRotationAngle);
+
+        // Adjust the scale to flip the image if necessary
+        if (webCamTexture.videoVerticallyMirrored)
+        {
+            cameraPreview.rectTransform.localScale = new Vector3(1, -1, 1);
+        }
+        else
+        {
+            cameraPreview.rectTransform.localScale = new Vector3(1, 1, 1);
+        }
+    }
 }
