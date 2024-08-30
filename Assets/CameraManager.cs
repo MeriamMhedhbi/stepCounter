@@ -4,40 +4,28 @@ using UnityEngine.Android;
 
 public class CameraManager : MonoBehaviour
 {
-    public Button cameraButton;
     public RawImage cameraPreview;  // UI element to display the camera feed
 
     private WebCamTexture webCamTexture;
 
     void Start()
     {
-        if (cameraButton != null)
-        {
-            cameraButton.onClick.AddListener(OpenCamera);
-        }
-        else
-        {
-            Debug.LogError("Camera Button is not assigned.");
-        }
-
         if (cameraPreview == null)
         {
             Debug.LogError("RawImage for camera preview is not assigned.");
+            return;
         }
-    }
-
-    void OpenCamera()
-    {
-        Debug.Log("Camera Button Clicked");
 
         if (Application.platform == RuntimePlatform.Android)
         {
+            // Check if the Camera permission is already granted
             if (Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
                 StartWebCam();
             }
             else
             {
+                // Request the Camera permission
                 Permission.RequestUserPermission(Permission.Camera);
             }
         }
@@ -47,37 +35,17 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    void OnApplicationFocus(bool hasFocus)
+    void Update()
     {
-        if (hasFocus && Application.platform == RuntimePlatform.Android)
+        // Check if the Camera permission was granted after the request
+        if (Application.platform == RuntimePlatform.Android && Permission.HasUserAuthorizedPermission(Permission.Camera))
         {
-            // Check if camera permission is granted and cameraPreview and webCamTexture are initialized
-            if (Permission.HasUserAuthorizedPermission(Permission.Camera))
-            {
-                if (cameraPreview != null && webCamTexture != null)
-                {
-                    StartWebCam();
-                }
-                else
-                {
-                    Debug.LogError("RawImage or WebCamTexture is not initialized.");
-                }
-            }
-            else
-            {
-                Debug.Log("Camera permission denied.");
-            }
+            StartWebCam();
         }
     }
 
     void StartWebCam()
     {
-        if (cameraPreview == null)
-        {
-            Debug.LogError("RawImage for camera preview is not assigned.");
-            return;
-        }
-
         if (webCamTexture == null)
         {
             webCamTexture = new WebCamTexture();
