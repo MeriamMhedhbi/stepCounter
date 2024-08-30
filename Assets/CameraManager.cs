@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Android;
+using System.IO;
 
 public class CameraManager : MonoBehaviour
 {
     public RawImage cameraPreview;  // UI element to display the camera feed
+    public string savePath = "capturedImage.png";  // Path where the image will be saved
 
     private WebCamTexture webCamTexture;
 
@@ -64,5 +66,28 @@ public class CameraManager : MonoBehaviour
         {
             webCamTexture.Stop();  // Stop the camera feed when not needed
         }
+    }
+
+    public void CapturePhoto()
+    {
+        if (webCamTexture == null || !webCamTexture.isPlaying)
+        {
+            Debug.LogError("WebCamTexture is not initialized or not playing.");
+            return;
+        }
+
+        // Create a Texture2D from the WebCamTexture
+        Texture2D photo = new Texture2D(webCamTexture.width, webCamTexture.height);
+        photo.SetPixels(webCamTexture.GetPixels());
+        photo.Apply();
+
+        // Encode the texture to PNG
+        byte[] photoBytes = photo.EncodeToPNG();
+
+        // Save the image to the file system
+        string path = Path.Combine(Application.persistentDataPath, savePath);
+        File.WriteAllBytes(path, photoBytes);
+
+        Debug.Log($"Photo saved to {path}");
     }
 }
