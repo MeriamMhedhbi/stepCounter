@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CameraFeedScreen.unity
     guid: f15d2bce8c6bede41a1e48f26762eede
+  - enabled: 1
+    path: Assets/Scenes/ViewImages.unity
+    guid: 35fc565604185d144bd3375dc1462bcb
   m_configObjects: {}
