@@ -151,8 +151,38 @@ public class StepCounter : MonoBehaviour
 
     private void CalculateCalories()
     {
-        float caloriesPerStep = 0.05f;
-        caloriesCountVal = stepCount * caloriesPerStep;
+        // Retrieve user info (ID, Gender, Height, Weight) from the database
+        var (id, gender, height, weight) = DatabaseManager.Instance.GetUserInfo();
+
+        // Check if the user information was retrieved successfully
+        if (id != 0)  // assuming ID is not 0 if the user exists
+        {
+            // Base calorie per step calculation
+            float baseCaloriesPerStep = 0.05f;
+
+            // Adjust calories based on gender
+            if (gender.ToLower() == "male")
+            {
+                baseCaloriesPerStep *= 1.1f;  // Assume men burn 10% more calories
+            }
+            else if (gender.ToLower() == "female")
+            {
+                baseCaloriesPerStep *= 0.9f;  // Assume women burn 10% less calories
+            }
+
+            // Adjust calories based on weight (example: more weight means higher calorie burn)
+            float caloriesPerStep = baseCaloriesPerStep * (weight / 70.0f);  // assuming 70kg is an average weight
+
+            // Calculate the total calories burned based on step count
+            caloriesCountVal = stepCount * caloriesPerStep;
+
+            // Log the result
+            Debug.Log($"Calories burned: {caloriesCountVal} based on {stepCount} steps, weight: {weight}kg, height: {height}m, gender: {gender}");
+        }
+        else
+        {
+            Debug.LogError("User information not found. Cannot calculate calories.");
+        }
     }
 
     public void CalibrateStepLength(float newStepLength)

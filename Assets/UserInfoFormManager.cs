@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UserInfoFormManager : MonoBehaviour
 {
@@ -52,6 +53,7 @@ public class UserInfoFormManager : MonoBehaviour
         Debug.Log("-**************************");
         // Save or update the info in the database
         databaseManager.UpdateUserInfo(id, newGender, newHeight, newWeight);
+        SceneManager.LoadScene("MainMenu");
 
     }
 }

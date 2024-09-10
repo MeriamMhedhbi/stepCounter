@@ -211,7 +211,7 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
-    public (int id,string gender, float height, float weight) GetUserInfo()
+    public (int id, string gender, float height, float weight) GetUserInfo()
     {
         dbPath = GetDatabasePath("StepCounterDB.sqlite");
         string connectionString = "URI=file:" + dbPath;
@@ -248,71 +248,71 @@ public class DatabaseManager : MonoBehaviour
             }
         }
 
-        return (id,gender, height, weight);
+        return (id, gender, height, weight);
     }
 
 
 
-   public void UpdateUserInfo(int id, string gender, float height, float weight)
-{
-    // Log to verify that the method is being called
-    Debug.Log("-************************** updateUser");
-
-    // Get the database path
-    dbPath = GetDatabasePath("StepCounterDB.sqlite");
-    Debug.Log("Database path: " + dbPath);  // Log the database path for debugging
-
-    // Define the connection string for SQLite
-    string connectionString = "URI=file:" + dbPath;
-    Debug.Log("Connection string: " + connectionString);  // Log the connection string for debugging
-
-    // Open a connection to the database
-    using (var connection = new SqliteConnection(connectionString))
+    public void UpdateUserInfo(int id, string gender, float height, float weight)
     {
-        connection.Open();  // Open the database connection
-        Debug.Log("Database connection opened.");  // Log to ensure connection is opened
+        // Log to verify that the method is being called
+        Debug.Log("-************************** updateUser");
 
-        using (var command = connection.CreateCommand())
+        // Get the database path
+        dbPath = GetDatabasePath("StepCounterDB.sqlite");
+        Debug.Log("Database path: " + dbPath);  // Log the database path for debugging
+
+        // Define the connection string for SQLite
+        string connectionString = "URI=file:" + dbPath;
+        Debug.Log("Connection string: " + connectionString);  // Log the connection string for debugging
+
+        // Open a connection to the database
+        using (var connection = new SqliteConnection(connectionString))
         {
-            // Update the existing user info based on the ID
-            command.CommandText = @"UPDATE UserInfo 
+            connection.Open();  // Open the database connection
+            Debug.Log("Database connection opened.");  // Log to ensure connection is opened
+
+            using (var command = connection.CreateCommand())
+            {
+                // Update the existing user info based on the ID
+                command.CommandText = @"UPDATE UserInfo 
                                     SET Gender = @gender, Height = @height, Weight = @weight 
                                     WHERE ID = @id";
-            Debug.Log("SQL Command: " + command.CommandText);  // Log the SQL query for debugging
+                Debug.Log("SQL Command: " + command.CommandText);  // Log the SQL query for debugging
 
-            // Add parameters for ID, gender, height, and weight
-            var idParam = command.CreateParameter();
-            idParam.ParameterName = "@id";
-            idParam.Value = id;
-            command.Parameters.Add(idParam);
-            Debug.Log("ID parameter added: " + id);  // Log the ID parameter
+                // Add parameters for ID, gender, height, and weight
+                var idParam = command.CreateParameter();
+                idParam.ParameterName = "@id";
+                idParam.Value = id;
+                command.Parameters.Add(idParam);
+                Debug.Log("ID parameter added: " + id);  // Log the ID parameter
 
-            var genderParam = command.CreateParameter();
-            genderParam.ParameterName = "@gender";
-            genderParam.Value = gender;
-            command.Parameters.Add(genderParam);
-            Debug.Log("Gender parameter added: " + gender);  // Log the gender parameter
+                var genderParam = command.CreateParameter();
+                genderParam.ParameterName = "@gender";
+                genderParam.Value = gender;
+                command.Parameters.Add(genderParam);
+                Debug.Log("Gender parameter added: " + gender);  // Log the gender parameter
 
-            var heightParam = command.CreateParameter();
-            heightParam.ParameterName = "@height";
-            heightParam.Value = height;
-            command.Parameters.Add(heightParam);
-            Debug.Log("Height parameter added: " + height);  // Log the height parameter
+                var heightParam = command.CreateParameter();
+                heightParam.ParameterName = "@height";
+                heightParam.Value = height;
+                command.Parameters.Add(heightParam);
+                Debug.Log("Height parameter added: " + height);  // Log the height parameter
 
-            var weightParam = command.CreateParameter();
-            weightParam.ParameterName = "@weight";
-            weightParam.Value = weight;
-            command.Parameters.Add(weightParam);
-            Debug.Log("Weight parameter added: " + weight);  // Log the weight parameter
+                var weightParam = command.CreateParameter();
+                weightParam.ParameterName = "@weight";
+                weightParam.Value = weight;
+                command.Parameters.Add(weightParam);
+                Debug.Log("Weight parameter added: " + weight);  // Log the weight parameter
 
-            // Execute the update command and log the result
-            int rowsAffected = command.ExecuteNonQuery();
-            Debug.Log("Rows affected: " + rowsAffected);  // Log the number of rows affected by the query
+                // Execute the update command and log the result
+                int rowsAffected = command.ExecuteNonQuery();
+                Debug.Log("Rows affected: " + rowsAffected);  // Log the number of rows affected by the query
 
-          
+
+            }
         }
     }
-}
 
 
 
