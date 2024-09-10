@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Data;
 using Mono.Data.SqliteClient;
 using System.IO;
+using System.Collections.Generic;
+
 
 public class DatabaseManager : MonoBehaviour
 {
@@ -34,11 +36,11 @@ public class DatabaseManager : MonoBehaviour
         CreateDatabase();
         CreateTables();
 
-        // Test inserting data
+       /* // Test inserting data
         InsertUserData("2024-08-28", 1000, 1.5f, 50f);
 
         // Test retrieving data
-        GetUserStepsForDate("2024-08-28");
+        GetUserStepsForDate("2024-08-28");*/
 
     }
 
@@ -313,6 +315,38 @@ public class DatabaseManager : MonoBehaviour
             }
         }
     }
+
+
+    public List<(string date, int steps, float distance, float calories)> GetLastThreeEntries()
+    {
+        dbPath = GetDatabasePath("StepCounterDB.sqlite");
+        string connectionString = "URI=file:" + dbPath;
+        List<(string date, int steps, float distance, float calories)> history = new List<(string, int, float, float)>();
+
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT Date, Steps, Distance, Calories FROM UserSteps ORDER BY Date DESC LIMIT 3";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string date = reader.GetString(0);
+                        int steps = reader.GetInt32(1);
+                        float distance = reader.GetFloat(2);
+                        float calories = reader.GetFloat(3);
+
+                        history.Add((date, steps, distance, calories));
+                    }
+                }
+            }
+        }
+        return history;
+    }
+
 
 
 

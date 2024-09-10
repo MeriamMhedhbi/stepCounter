@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UserInfo.unity
     guid: cc3df00989268bd499fd13114b6ae5c0
+  - enabled: 1
+    path: Assets/Scenes/historySteps.unity
+    guid: 502fbcaa5959c144ea39dc1c29504c73
   m_configObjects: {}
