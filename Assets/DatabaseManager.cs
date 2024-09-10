@@ -87,6 +87,16 @@ public class DatabaseManager : MonoBehaviour
                                     Calories REAL NOT NULL
                                     );";
                 command.ExecuteNonQuery();
+
+                // Create the UserInfo table
+                command.CommandText = @"CREATE TABLE IF NOT EXISTS UserInfo (
+                                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    Gender TEXT NOT NULL,
+                                    Height REAL NOT NULL,
+                                    Weight REAL NOT NULL
+                                    );";
+                command.ExecuteNonQuery();
+
                 Debug.Log("Table created or verified.");
             }
         }
@@ -168,4 +178,143 @@ public class DatabaseManager : MonoBehaviour
             }
         }
     }
+
+    public void InsertUserInfo(string gender, float height, float weight)
+    {
+        string connectionString = "URI=file:" + dbPath;
+
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "INSERT INTO UserInfo (Gender, Height, Weight) VALUES (@gender, @height, @weight)";
+
+                var genderParam = command.CreateParameter();
+                genderParam.ParameterName = "@gender";
+                genderParam.Value = gender;
+                command.Parameters.Add(genderParam);
+
+                var heightParam = command.CreateParameter();
+                heightParam.ParameterName = "@height";
+                heightParam.Value = height;
+                command.Parameters.Add(heightParam);
+
+                var weightParam = command.CreateParameter();
+                weightParam.ParameterName = "@weight";
+                weightParam.Value = weight;
+                command.Parameters.Add(weightParam);
+
+                command.ExecuteNonQuery();
+                Debug.Log("User information inserted into the database.");
+            }
+        }
+    }
+
+    public (int id,string gender, float height, float weight) GetUserInfo()
+    {
+        dbPath = GetDatabasePath("StepCounterDB.sqlite");
+        string connectionString = "URI=file:" + dbPath;
+        Debug.Log("Connection string for query: " + connectionString); // Print the connection string
+
+        int id = 0;
+        string gender = "";
+        float height = 0f;
+        float weight = 0f;
+
+        using (var connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT ID,Gender, Height, Weight FROM UserInfo ORDER BY ID DESC LIMIT 1";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        id = reader.GetInt32(0);
+                        gender = reader.GetString(1);
+                        height = reader.GetFloat(2);
+                        weight = reader.GetFloat(3);
+
+                        Debug.Log($"--------------------------------User Info: Gender = {gender}, Height = {height}, Weight = {weight}");
+                    }
+                    else
+                    {
+                        Debug.Log("No user information found.");
+                    }
+                }
+            }
+        }
+
+        return (id,gender, height, weight);
+    }
+
+
+
+   public void UpdateUserInfo(int id, string gender, float height, float weight)
+{
+    // Log to verify that the method is being called
+    Debug.Log("-************************** updateUser");
+
+    // Get the database path
+    dbPath = GetDatabasePath("StepCounterDB.sqlite");
+    Debug.Log("Database path: " + dbPath);  // Log the database path for debugging
+
+    // Define the connection string for SQLite
+    string connectionString = "URI=file:" + dbPath;
+    Debug.Log("Connection string: " + connectionString);  // Log the connection string for debugging
+
+    // Open a connection to the database
+    using (var connection = new SqliteConnection(connectionString))
+    {
+        connection.Open();  // Open the database connection
+        Debug.Log("Database connection opened.");  // Log to ensure connection is opened
+
+        using (var command = connection.CreateCommand())
+        {
+            // Update the existing user info based on the ID
+            command.CommandText = @"UPDATE UserInfo 
+                                    SET Gender = @gender, Height = @height, Weight = @weight 
+                                    WHERE ID = @id";
+            Debug.Log("SQL Command: " + command.CommandText);  // Log the SQL query for debugging
+
+            // Add parameters for ID, gender, height, and weight
+            var idParam = command.CreateParameter();
+            idParam.ParameterName = "@id";
+            idParam.Value = id;
+            command.Parameters.Add(idParam);
+            Debug.Log("ID parameter added: " + id);  // Log the ID parameter
+
+            var genderParam = command.CreateParameter();
+            genderParam.ParameterName = "@gender";
+            genderParam.Value = gender;
+            command.Parameters.Add(genderParam);
+            Debug.Log("Gender parameter added: " + gender);  // Log the gender parameter
+
+            var heightParam = command.CreateParameter();
+            heightParam.ParameterName = "@height";
+            heightParam.Value = height;
+            command.Parameters.Add(heightParam);
+            Debug.Log("Height parameter added: " + height);  // Log the height parameter
+
+            var weightParam = command.CreateParameter();
+            weightParam.ParameterName = "@weight";
+            weightParam.Value = weight;
+            command.Parameters.Add(weightParam);
+            Debug.Log("Weight parameter added: " + weight);  // Log the weight parameter
+
+            // Execute the update command and log the result
+            int rowsAffected = command.ExecuteNonQuery();
+            Debug.Log("Rows affected: " + rowsAffected);  // Log the number of rows affected by the query
+
+          
+        }
+    }
+}
+
+
+
+
 }
