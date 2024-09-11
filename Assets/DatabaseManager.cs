@@ -37,9 +37,7 @@ public class DatabaseManager : MonoBehaviour
         CreateTables();
 
         // Test inserting data
-         InsertUserData("2024-09-10", 1000, 2.5f, 50f);
-         InsertUserData("2024-09-9", 1200, 3.0f, 60f);
-         InsertUserData("2024-09-8", 500, 1.5f, 25);
+        // InsertUserData("2024-09-10", 1000, 2.5f, 50f);
 
          // Test retrieving data
          //GetUserStepsForDate("2024-08-28");
