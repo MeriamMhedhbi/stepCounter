@@ -4,8 +4,8 @@ using System.IO;
 
 public class PhotoGallery : MonoBehaviour
 {
-    public GameObject photoPrefab;  // The prefab to use for displaying each photo
-    public Transform contentPanel;  // The parent object where photo prefabs will be instantiated
+    public GameObject photoPrefab;  
+    public Transform contentPanel;  
 
     void Start()
     {
@@ -28,7 +28,6 @@ public class PhotoGallery : MonoBehaviour
 
     void DisplayPhotos()
     {
-        // Log references for debugging
         Debug.Log("Content Panel: " + contentPanel);
         Debug.Log("Photo Prefab: " + photoPrefab);
 

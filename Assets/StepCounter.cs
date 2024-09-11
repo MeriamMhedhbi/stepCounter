@@ -75,12 +75,12 @@ public class StepCounter : MonoBehaviour
         }
 
         // Start GPS service
-        Input.location.Start();
+        Input.location.Start(5f, 5f);
 
         int maxWait = 20;
         while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(3);
             maxWait--;
         }
 
@@ -141,13 +141,13 @@ public class StepCounter : MonoBehaviour
         {
             Vector2 currentGPSPosition = new Vector2(Input.location.lastData.latitude, Input.location.lastData.longitude);
             gpsDistance = Vector2.Distance(prevGPSPosition, currentGPSPosition) * 1000f; // Distance in meters
-            prevGPSPosition = currentGPSPosition;
-            distanceWalked += gpsDistance;
-        }
 
-        // Combine both methods for a more accurate distance measurement
-        distanceWalked += distanceFromSteps;
+                prevGPSPosition = currentGPSPosition;
+                distanceWalked += gpsDistance;
+        }
+        distanceWalked += distanceFromSteps/50;
     }
+
 
     private void CalculateCalories()
     {

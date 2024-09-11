@@ -4,16 +4,13 @@ using UnityEngine.SceneManagement;
 
 public class UserInfoFormManager : MonoBehaviour
 {
-    public TMP_Dropdown genderDropdown;      // Dropdown for gender
-    public TMP_InputField heightInputField;  // InputField for height
-    public TMP_InputField weightInputField;  // InputField for weight
-    public TMP_Text statusText;              // To display save/update status (optional)
-
+    public TMP_Dropdown genderDropdown;      
+    public TMP_InputField heightInputField;  
+    public TMP_InputField weightInputField; 
     private DatabaseManager databaseManager;
 
     void Start()
     {
-        Debug.Log("-**************************heyyyyyyyyyyyyyyyyyyyy ");
         // Initialize the database manager
         databaseManager = DatabaseManager.Instance;
         Debug.Log("-**************************data from query ");
@@ -46,12 +43,9 @@ public class UserInfoFormManager : MonoBehaviour
         string newGender = genderDropdown.options[genderDropdown.value].text;
         float newHeight = float.Parse(heightInputField.text);
         float newWeight = float.Parse(weightInputField.text);
-        Debug.Log("-**************************");
         Debug.Log(newGender);
         Debug.Log(newHeight);
         Debug.Log(newWeight);
-        Debug.Log("-**************************");
-        // Save or update the info in the database
         databaseManager.UpdateUserInfo(id, newGender, newHeight, newWeight);
         SceneManager.LoadScene("MainMenu");
 

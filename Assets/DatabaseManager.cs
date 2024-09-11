@@ -36,11 +36,13 @@ public class DatabaseManager : MonoBehaviour
         CreateDatabase();
         CreateTables();
 
-       /* // Test inserting data
-        InsertUserData("2024-08-28", 1000, 1.5f, 50f);
+        // Test inserting data
+         InsertUserData("2024-09-10", 1000, 2.5f, 50f);
+         InsertUserData("2024-09-9", 1200, 3.0f, 60f);
+         InsertUserData("2024-09-8", 500, 1.5f, 25);
 
-        // Test retrieving data
-        GetUserStepsForDate("2024-08-28");*/
+         // Test retrieving data
+         //GetUserStepsForDate("2024-08-28");
 
     }
 
@@ -54,10 +56,8 @@ public class DatabaseManager : MonoBehaviour
 
     private void CreateDatabase()
     {
-        // This method is for initializing the database if needed
         if (!File.Exists(dbPath))
         {
-            // Create an empty file which SQLite will recognize as a database
             using (FileStream fs = File.Create(dbPath))
             {
                 fs.Close();
@@ -72,9 +72,8 @@ public class DatabaseManager : MonoBehaviour
 
     private void CreateTables()
     {
-        // Update connection string to URI format
         string connectionString = "URI=file:" + dbPath;
-        Debug.Log("Connection string: " + connectionString); // Print the connection string
+        Debug.Log("Connection string: " + connectionString); 
 
         using (var connection = new SqliteConnection(connectionString))
         {
@@ -90,7 +89,7 @@ public class DatabaseManager : MonoBehaviour
                                     );";
                 command.ExecuteNonQuery();
 
-                // Create the UserInfo table
+            
                 command.CommandText = @"CREATE TABLE IF NOT EXISTS UserInfo (
                                     ID INTEGER PRIMARY KEY AUTOINCREMENT,
                                     Gender TEXT NOT NULL,
@@ -108,7 +107,7 @@ public class DatabaseManager : MonoBehaviour
     public void InsertUserData(string date, int steps, float distance, float calories)
     {
         string connectionString = "URI=file:" + dbPath;
-        Debug.Log("Connection string for insert: " + connectionString); // Print the connection string
+        Debug.Log("Connection string for insert: " + connectionString); 
 
         using (var connection = new SqliteConnection(connectionString))
         {
@@ -117,7 +116,6 @@ public class DatabaseManager : MonoBehaviour
             {
                 command.CommandText = "INSERT INTO UserSteps (Date, Steps, Distance, Calories) VALUES (@date, @steps, @distance, @calories)";
 
-                // Add parameters explicitly
                 var dateParam = command.CreateParameter();
                 dateParam.ParameterName = "@date";
                 dateParam.Value = date;
@@ -147,7 +145,7 @@ public class DatabaseManager : MonoBehaviour
     public void GetUserStepsForDate(string date)
     {
         string connectionString = "URI=file:" + dbPath;
-        Debug.Log("Connection string for query: " + connectionString); // Print the connection string
+        Debug.Log("Connection string for query: " + connectionString); 
 
         using (var connection = new SqliteConnection(connectionString))
         {
@@ -217,7 +215,7 @@ public class DatabaseManager : MonoBehaviour
     {
         dbPath = GetDatabasePath("StepCounterDB.sqlite");
         string connectionString = "URI=file:" + dbPath;
-        Debug.Log("Connection string for query: " + connectionString); // Print the connection string
+        Debug.Log("Connection string for query: " + connectionString);
 
         int id = 0;
         string gender = "";
@@ -257,16 +255,12 @@ public class DatabaseManager : MonoBehaviour
 
     public void UpdateUserInfo(int id, string gender, float height, float weight)
     {
-        // Log to verify that the method is being called
-        Debug.Log("-************************** updateUser");
-
         // Get the database path
         dbPath = GetDatabasePath("StepCounterDB.sqlite");
-        Debug.Log("Database path: " + dbPath);  // Log the database path for debugging
 
         // Define the connection string for SQLite
         string connectionString = "URI=file:" + dbPath;
-        Debug.Log("Connection string: " + connectionString);  // Log the connection string for debugging
+        Debug.Log("Connection string: " + connectionString);
 
         // Open a connection to the database
         using (var connection = new SqliteConnection(connectionString))
@@ -280,36 +274,35 @@ public class DatabaseManager : MonoBehaviour
                 command.CommandText = @"UPDATE UserInfo 
                                     SET Gender = @gender, Height = @height, Weight = @weight 
                                     WHERE ID = @id";
-                Debug.Log("SQL Command: " + command.CommandText);  // Log the SQL query for debugging
+                Debug.Log("SQL Command: " + command.CommandText);
 
                 // Add parameters for ID, gender, height, and weight
                 var idParam = command.CreateParameter();
                 idParam.ParameterName = "@id";
                 idParam.Value = id;
                 command.Parameters.Add(idParam);
-                Debug.Log("ID parameter added: " + id);  // Log the ID parameter
+
 
                 var genderParam = command.CreateParameter();
                 genderParam.ParameterName = "@gender";
                 genderParam.Value = gender;
                 command.Parameters.Add(genderParam);
-                Debug.Log("Gender parameter added: " + gender);  // Log the gender parameter
+
 
                 var heightParam = command.CreateParameter();
                 heightParam.ParameterName = "@height";
                 heightParam.Value = height;
                 command.Parameters.Add(heightParam);
-                Debug.Log("Height parameter added: " + height);  // Log the height parameter
 
                 var weightParam = command.CreateParameter();
                 weightParam.ParameterName = "@weight";
                 weightParam.Value = weight;
                 command.Parameters.Add(weightParam);
-                Debug.Log("Weight parameter added: " + weight);  // Log the weight parameter
 
-                // Execute the update command and log the result
+
+
                 int rowsAffected = command.ExecuteNonQuery();
-                Debug.Log("Rows affected: " + rowsAffected);  // Log the number of rows affected by the query
+                Debug.Log("Rows affected: " + rowsAffected);
 
 
             }
@@ -328,7 +321,7 @@ public class DatabaseManager : MonoBehaviour
             connection.Open();
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = "SELECT Date, Steps, Distance, Calories FROM UserSteps ORDER BY Date DESC LIMIT 3";
+                command.CommandText = "SELECT Date, Steps, Distance, Calories FROM UserSteps ORDER BY ID DESC LIMIT 3";
 
                 using (var reader = command.ExecuteReader())
                 {
